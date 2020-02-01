@@ -20,9 +20,8 @@ class AdminTest(TestCase):
 
 		self.user = get_user_model().objects.create_user(
 			email='shubham94@gmail.com',
-			password='password123'
-			
-
+			password='password123',
+			name='Test name'
 			)
 
 	def test_users_listed(self):
