@@ -6,7 +6,7 @@ from rest_framework import serializers
 
 
 
-class CreateUserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
 	"""Takes in the user input"""
 
 	class Meta:
@@ -17,6 +17,17 @@ class CreateUserSerializer(serializers.ModelSerializer):
 	def create(self, validated_data):
 		"""Creates an object"""
 		return get_user_model().objects.create_user(**validated_data)
+
+	def update(self, instance, validated_data):
+		"""Updates the user, sets password and returns user"""
+		password = validated_data.pop('password', None)
+		user = super().update(instance, validated_data)
+
+		if password:
+			user.set_password(password)
+			user.save()
+
+		return user
 
 
 
