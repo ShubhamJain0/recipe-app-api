@@ -73,3 +73,23 @@ class Ingredients(models.Model):
 	def __str__(self):
 		"""Returns the string representation"""
 		return self.name
+
+
+
+class recipe(models.Model):
+
+	user = models.ForeignKey(
+		settings.AUTH_USER_MODEL,
+		on_delete=models.CASCADE
+		)
+	title = models.CharField(max_length=255)
+	time_minutes = models.IntegerField()
+	price = models.DecimalField(max_digits=5, decimal_places=2)
+	link = models.CharField(blank=True, max_length=255)
+	ingredients = models.ManyToManyField('Ingredients')
+	tags = models.ManyToManyField('Tag')
+
+
+	def __str__(self):
+		"""Returns the string representation"""
+		return self.title
