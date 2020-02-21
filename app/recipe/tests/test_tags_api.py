@@ -5,7 +5,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from core.models import Tag
+from core.models import Tag, recipe
 from recipe.serializers import TagSerializer
 
 
@@ -95,3 +95,31 @@ class PrivateUserTagTest(TestCase):
 		res = self.client.post(url, payload)
 
 		self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+	def test_retrieving_assigned_tags(self):
+		"""Tests that only the tags that are assigned to recipe are retrieved"""
+		tag1 = Tag.objects.create(
+			user=self.user,
+			name='Vegan'
+			)
+		tag2 = Tag.objects.create(
+			user=self.user,
+			name='Dessert'
+			)
+		recipes = recipe.objects.create(
+			user=self.user,
+			title='Toast',
+			time_minutes=10,
+			price=2.00
+			)
+		recipes.tags.add(tag1)
+
+		url = reverse('recipe:tag-list')
+		res = self.client.get(url, {'assigned_only':1})
+
+		serializer1 = TagSerializer(tag1)
+		serializer2 = TagSerializer(tag2)
+
+		self.assertIn(serializer1.data, res.data)
+		self.assertNotIn(serializer2.data, res.data)		
